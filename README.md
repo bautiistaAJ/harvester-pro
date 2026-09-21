@@ -28,42 +28,67 @@ theHarvester REST API (puerto 5000)
 ## Requisitos
 
 - Node.js >= 18
-- Python >= 3.12
-- [theHarvester](https://github.com/laramies/theHarvester) instalado
+- Python 3.14
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) (package manager)
+- [theHarvester](https://github.com/laramies/theHarvester)
 
 ## Instalacion
 
-### 1. Instalar theHarvester
+### 1. Instalar uv (si no lo tienes)
+
+```bash
+# Linux/macOS
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+### 2. Instalar theHarvester
+
+#### Opcion A: Kali Linux (paquete del sistema)
+
+```bash
+sudo apt update
+sudo apt install theharvester
+```
+
+Nota: El paquete de Kali puede estar desactualizado. Para la ultima version, usa la Opcion B.
+
+#### Opcion B: Desde codigo fuente (recomendado)
 
 ```bash
 git clone https://github.com/laramies/theHarvester.git
 cd theHarvester
-pip install -e .
+uv sync
 ```
 
-### 2. Configurar API key
+### 3. Configurar API key
 
 ```bash
-export THEHARVESTER_API_KEY="tu_api_key_aqui"
+export THEHARVESTER_API_KEY="$(openssl rand -hex 32)"
+echo "Tu API key: $THEHARVESTER_API_KEY"
 ```
 
-### 3. Iniciar theHarvester API
+### 4. Iniciar theHarvester API
 
 ```bash
+# Si instalaste con uv:
+uv run harvestview --port 5000
+
+# Si instalaste con apt (Kali):
 harvestview --port 5000
 ```
 
-### 4. Instalar backend
+### 5. Instalar dependencias del proyecto
 
 ```bash
+# Backend
 cd theharvester-pro/backend
 npm install
-```
 
-### 5. Instalar frontend
-
-```bash
-cd theharvester-pro/frontend
+# Frontend
+cd ../frontend
 npm install
 ```
 
@@ -72,8 +97,9 @@ npm install
 ### 1. Iniciar theHarvester API (terminal 1)
 
 ```bash
+cd ~/theHarvester
 export THEHARVESTER_API_KEY="tu_key"
-harvestview --port 5000
+uv run harvestview --port 5000
 ```
 
 ### 2. Iniciar backend (terminal 2)
@@ -96,12 +122,28 @@ npm run dev
 http://localhost:5174
 ```
 
+## Screenshots (opcional)
+
+Para capturar screenshots de subdominios, necesitas Playwright con Chromium:
+
+```bash
+cd ~/theHarvester
+uv run playwright install chromium
+```
+
+En Linux, puede faltar dependencias del sistema:
+
+```bash
+uv run playwright install-deps
+uv run playwright install chromium
+```
+
 ## Variables de entorno
 
 | Variable | Default | Descripcion |
 |----------|---------|-------------|
 | `THEHARVESTER_URL` | `http://localhost:5000` | URL de la API de theHarvester |
-| `THEHARVESTER_API_KEY` | - | API key de theHarvester |
+| `THEHARVESTER_API_KEY` | - | API key de theHarvester (requerido) |
 | `PORT` | `3001` | Puerto del backend |
 
 ## Fuentes disponibles
@@ -117,6 +159,16 @@ http://localhost:5174
 | Email Intel | hunter, tomba, rocketreach |
 | Mobile | bevigil, hudsonrock |
 | Other | waybackarchive, builtwith, sourcegraph |
+
+## API Endpoints
+
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| POST | `/api/scan` | Crear escaneo |
+| GET | `/api/results/:id` | Obtener resultados |
+| GET | `/api/sources` | Listar fuentes |
+| GET | `/api/runs` | Historial |
+| POST | `/api/cancel/:id` | Cancelar escaneo |
 
 ## Stack
 
