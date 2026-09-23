@@ -54,21 +54,23 @@ const search = ref('')
 const selectedSources = ref([])
 const catalog = ref([])
 
+const FALLBACK_SOURCES = ['crtsh', 'rapiddns', 'duckduckgo', 'otx', 'urlscan']
+
 function categoryOf(name) {
   const c = String(name).toLowerCase()
   if (['crtsh','certspotter','crt-name'].includes(c)) return 'Certificate Transparency'
-  if (['dnsdumpster','hackertarget','rapiddns','commoncrawl','robtex','subdomaincenter','subdomainapi','subdomaincenter','subdomainfinderc99'].includes(c)) return 'DNS'
-  if (['baidu','bing','duckduckgo','yahoo','mojeek','brave'].includes(c)) return 'Search Engines'
-  if (['otx','virustotal','dehashed','intelx','leakix','hibpverified','haveibeenpwned','hudsonrock','hunter','tomba','rocketreach','hunterhow','leaklookup','sherlockeye','subdomainapi','subdomainfinderc99','waybackarchive','builtwith','sourcegraph','arquivo','apis-guru','fullhunt','netlas','dymo','securityscorecard','securityTrails','whoisxml','windvane','projectdiscovery','pentesttools','criminalip','onyphe','jsmon','bufferoverun','havetheybeenpwned'].includes(c)) {
+  if (['dnsdumpster','hackertarget','rapiddns','commoncrawl','robtex','subdomaincenter','subdomainapi','subdomainfinderc99'].includes(c)) return 'DNS'
+  if (['baidu','duckduckgo','yahoo','mojeek','brave'].includes(c)) return 'Search Engines'
+  if (['otx','virustotal','dehashed','intelx','leakix','hibpverified','haveibeenpwned','hudsonrock','hunter','tomba','rocketreach','hunterhow','leaklookup','sherlockeye','waybackarchive','builtwith','sourcegraph','arquivo','apis-guru','fullhunt','netlas','dymo','securityscorecard','securitytrails','whoisxml','windvane','projectdiscovery','pentesttools','criminalip','onyphe','jsmon','bufferoverun'].includes(c)) {
     if (['otx','virustotal','dehashed','intelx','leakix','hibpverified','haveibeenpwned','hudsonrock','hunter','tomba','rocketreach','hunterhow','leaklookup','sherlockeye'].includes(c)) return 'Threat Intel'
-    if (['censys','shodan','shodanInternetDB','urlscan','fofa','zoomeye','criminalip','securityscorecard','securityTrails'].includes(c)) return 'Scan Data'
+    if (['censys','shodan','shodaninternetdb','urlscan','fofa','zoomeye','criminalip','securityscorecard','securitytrails'].includes(c)) return 'Scan Data'
     if (['github-code','gitlab'].includes(c)) return 'Code'
-    if (['hunter','tomba','rocketreach','hunterhow','leaklookup','sherlockeye','hibpverified','haveibeenpwned'].includes(c)) return 'Email Intel'
+    if (['hunter','tomba','rocketreach','hunterhow','leaklookup','sherlockeye'].includes(c)) return 'Email Intel'
     if (['bevigil','hudsonrock'].includes(c)) return 'Mobile'
     return 'Other'
   }
-  if (['havetheybeenpwned','hibpverified'].includes(c)) return 'Threat Intel'
-  if (['censys','shodan','shodanInternetDB','urlscan','fofa','zoomeye','criminalip','securityTrails','securityscorecard'].includes(c)) return 'Scan Data'
+  if (['hibpverified'].includes(c)) return 'Threat Intel'
+  if (['censys','shodan','shodaninternetdb','urlscan','fofa','zoomeye','criminalip','securitytrails','securityscorecard'].includes(c)) return 'Scan Data'
   return 'Other'
 }
 
@@ -100,7 +102,8 @@ const defaultSources = computed(() => {
   if (safe.includes('crtsh') && safe.includes('rapiddns') && safe.includes('duckduckgo')) {
     return ['crtsh', 'rapiddns', 'duckduckgo']
   }
-  return safe.slice(0, 3)
+  if (safe.length >= 3) return safe.slice(0, 3)
+  return FALLBACK_SOURCES
 })
 
 function selectAll() {
@@ -114,14 +117,23 @@ function selectNone() {
 function loadCatalog() {
   if (props.availableSources && props.availableSources.length) {
     catalog.value = props.availableSources
-    if (!selectedSources.value.length) {
-      selectedSources.value = defaultSources.value
-    }
+  }
+  if (!selectedSources.value.length) {
+    selectedSources.value = defaultSources.value
   }
 }
 
 watch(selectedSources, (val) => {
   emit('update:sources', val)
+}, { immediate: true })
+
+watch(() => props.availableSources, (newVal) => {
+  if (newVal && newVal.length) {
+    catalog.value = newVal
+    if (!selectedSources.value.length) {
+      selectedSources.value = defaultSources.value
+    }
+  }
 }, { immediate: true })
 
 onMounted(loadCatalog)

@@ -81,8 +81,10 @@ export const useSearchStore = defineStore('search', () => {
       logs.value.push(`Scan started: ${response.data.run_id}`)
       startPolling()
     } catch (e) {
+      stopPolling()
       error.value = e.response?.data?.error || e.message
       isLoading.value = false
+      console.error('Scan failed:', error.value)
     }
   }
 
