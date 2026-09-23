@@ -5,7 +5,7 @@
       class="btn-secondary text-sm"
       :disabled="!hasData"
     >
-      Export ▾
+      Exportar ▾
     </button>
 
     <transition name="fade">

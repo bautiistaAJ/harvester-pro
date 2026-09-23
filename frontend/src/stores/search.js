@@ -63,7 +63,7 @@ export const useSearchStore = defineStore('search', () => {
   async function fetchSources() {
     try {
       const response = await api.getSources()
-      sources.value = response.data
+      sources.value = (response.data && response.data.sources) || []
     } catch (e) {
       console.error('Failed to fetch sources:', e)
     }

@@ -1,11 +1,11 @@
 <template>
   <div class="card">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-white">Data Sources</h3>
+      <h3 class="text-lg font-semibold text-white">Fuentes de datos</h3>
       <div class="flex space-x-2">
-        <button @click="selectAll" class="text-xs text-primary-400 hover:text-primary-300">Select All</button>
+        <button @click="selectAll" class="text-xs text-primary-400 hover:text-primary-300">Seleccionar todo</button>
         <span class="text-gray-600">|</span>
-        <button @click="selectNone" class="text-xs text-gray-500 hover:text-gray-400">None</button>
+        <button @click="selectNone" class="text-xs text-gray-500 hover:text-gray-400">Ninguno</button>
       </div>
     </div>
 
@@ -13,7 +13,7 @@
       v-model="search"
       type="text"
       class="input-field mb-3"
-      placeholder="Search sources..."
+      placeholder="Buscar fuente..."
     />
 
     <div class="max-h-64 overflow-y-auto space-y-1">
@@ -36,13 +36,13 @@
     </div>
 
     <div class="mt-3 text-xs text-gray-500">
-      {{ selectedSources.length }} sources selected
+      {{ selectedSources.length }} fuente(s) seleccionada(s)
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 
 const emit = defineEmits(['update:sources'])
 
@@ -51,40 +51,78 @@ const props = defineProps({
 })
 
 const search = ref('')
-const selectedSources = ref(['crtsh', 'rapiddns', 'bing', 'duckduckgo', 'otx', 'urlscan'])
+const selectedSources = ref([])
+const catalog = ref([])
 
-const allSources = {
-  'Search Engines': ['baidu', 'bing', 'duckduckgo', 'yahoo', 'mojeek', 'brave'],
-  'Certificate Transparency': ['crtsh', 'certspotter', 'crt-name'],
-  'DNS': ['dnsdumpster', 'hackertarget', 'rapiddns', 'commoncrawl', 'robtex', 'subdomaincenter'],
-  'Threat Intel': ['otx', 'virustotal', 'dehashed', 'intelx', 'leakix', 'hibp'],
-  'Scan Data': ['censys', 'shodan', 'shodanInternetDB', 'urlscan', 'fofa', 'zoomeye', 'criminalip'],
-  'Code': ['github-code', 'gitlab'],
-  'Email Intel': ['hunter', 'tomba', 'rocketreach'],
-  'Mobile': ['bevigil', 'hudsonrock'],
-  'Other': ['waybackarchive', 'builtwith', 'sourcegraph', 'arquivo']
+function categoryOf(name) {
+  const c = String(name).toLowerCase()
+  if (['crtsh','certspotter','crt-name'].includes(c)) return 'Certificate Transparency'
+  if (['dnsdumpster','hackertarget','rapiddns','commoncrawl','robtex','subdomaincenter','subdomainapi','subdomaincenter','subdomainfinderc99'].includes(c)) return 'DNS'
+  if (['baidu','bing','duckduckgo','yahoo','mojeek','brave'].includes(c)) return 'Search Engines'
+  if (['otx','virustotal','dehashed','intelx','leakix','hibpverified','haveibeenpwned','hudsonrock','hunter','tomba','rocketreach','hunterhow','leaklookup','sherlockeye','subdomainapi','subdomainfinderc99','waybackarchive','builtwith','sourcegraph','arquivo','apis-guru','fullhunt','netlas','dymo','securityscorecard','securityTrails','whoisxml','windvane','projectdiscovery','pentesttools','criminalip','onyphe','jsmon','bufferoverun','havetheybeenpwned'].includes(c)) {
+    if (['otx','virustotal','dehashed','intelx','leakix','hibpverified','haveibeenpwned','hudsonrock','hunter','tomba','rocketreach','hunterhow','leaklookup','sherlockeye'].includes(c)) return 'Threat Intel'
+    if (['censys','shodan','shodanInternetDB','urlscan','fofa','zoomeye','criminalip','securityscorecard','securityTrails'].includes(c)) return 'Scan Data'
+    if (['github-code','gitlab'].includes(c)) return 'Code'
+    if (['hunter','tomba','rocketreach','hunterhow','leaklookup','sherlockeye','hibpverified','haveibeenpwned'].includes(c)) return 'Email Intel'
+    if (['bevigil','hudsonrock'].includes(c)) return 'Mobile'
+    return 'Other'
+  }
+  if (['havetheybeenpwned','hibpverified'].includes(c)) return 'Threat Intel'
+  if (['censys','shodan','shodanInternetDB','urlscan','fofa','zoomeye','criminalip','securityTrails','securityscorecard'].includes(c)) return 'Scan Data'
+  return 'Other'
 }
 
+const catalogSources = computed(() => {
+  if (!catalog.value.length) return []
+  return catalog.value.filter(s => s.name && s.activity)
+})
+
 const filteredSources = computed(() => {
-  if (!search.value) return allSources
+  const grouped = {}
+  for (const s of catalogSources.value) {
+    const cat = categoryOf(s.name)
+    if (!grouped[cat]) grouped[cat] = []
+    grouped[cat].push(s.name)
+  }
+  if (!search.value) return grouped
   const q = search.value.toLowerCase()
   const result = {}
-  for (const [cat, sources] of Object.entries(allSources)) {
-    const filtered = sources.filter(s => s.includes(q))
+  for (const [cat, sources] of Object.entries(grouped)) {
+    const filtered = sources.filter(s => s.toLowerCase().includes(q))
     if (filtered.length) result[cat] = filtered
   }
   return result
 })
 
+const defaultSources = computed(() => {
+  const all = catalogSources.value.map(s => s.name)
+  const safe = all.filter(n => !['bing','hibp','hibpverified','haveibeenpwned'].includes(n.toLowerCase()))
+  if (safe.includes('crtsh') && safe.includes('rapiddns') && safe.includes('duckduckgo')) {
+    return ['crtsh', 'rapiddns', 'duckduckgo']
+  }
+  return safe.slice(0, 3)
+})
+
 function selectAll() {
-  selectedSources.value = Object.values(allSources).flat()
+  selectedSources.value = catalogSources.value.map(s => s.name)
 }
 
 function selectNone() {
   selectedSources.value = []
 }
 
+function loadCatalog() {
+  if (props.availableSources && props.availableSources.length) {
+    catalog.value = props.availableSources
+    if (!selectedSources.value.length) {
+      selectedSources.value = defaultSources.value
+    }
+  }
+}
+
 watch(selectedSources, (val) => {
   emit('update:sources', val)
 }, { immediate: true })
+
+onMounted(loadCatalog)
 </script>

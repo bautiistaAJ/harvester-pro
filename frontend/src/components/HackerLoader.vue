@@ -16,11 +16,11 @@
         <div class="relative z-10 w-full max-w-3xl mx-auto">
           <div class="flex items-center justify-between mb-6">
             <div>
-              <div class="hacker-title" data-text="ENUMERATING TARGET...">ENUMERATING TARGET...</div>
-              <div class="text-xs mt-1" style="color: #00ffcc88;">TARGET: {{ target }}</div>
+              <div class="hacker-title" data-text="ESCANEANDO OBJETIVO...">ESCANEANDO OBJETIVO...</div>
+              <div class="text-xs mt-1" style="color: #00ffcc88;">OBJETIVO: {{ target }}</div>
             </div>
             <div class="text-right">
-              <div class="text-xs" style="color: #ff00ffaa;">TIME {{ formattedTime }}</div>
+              <div class="text-xs" style="color: #ff00ffaa;">TIEMPO {{ formattedTime }}</div>
             </div>
           </div>
 
@@ -31,14 +31,14 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <div class="text-xs mb-2 uppercase tracking-widest" style="color: #ff00ff88;">// sources_active</div>
+              <div class="text-xs mb-2 uppercase tracking-widest" style="color: #ff00ff88;">// fuentes_activas</div>
               <div v-for="(src, i) in activeSources" :key="'src-' + i" class="text-xs mb-1" style="color: #00ffcc99;">
                 [{{ src.status }}] {{ src.name }}
               </div>
             </div>
             <div>
-              <div class="text-xs mb-2 uppercase tracking-widest" style="color: #ff00ff88;">// findings</div>
-              <div v-if="findings.length === 0" class="text-xs" style="color: #00ffcc55;">Scanning...</div>
+              <div class="text-xs mb-2 uppercase tracking-widest" style="color: #ff00ff88;">// hallazgos</div>
+              <div v-if="findings.length === 0" class="text-xs" style="color: #00ffcc55;">Escaneando...</div>
               <div v-for="(f, i) in findings" :key="'find-' + i" class="text-xs mb-1" style="color: #00ffffaa;">
                 [{{ f.type }}] {{ f.value }}
               </div>
@@ -46,8 +46,8 @@
           </div>
 
           <div class="flex items-center justify-between pt-3" style="border-top: 1px solid #00ffcc22;">
-            <div class="text-xs" style="color: #00ffcc66;">THEHARVESTER-PRO v1.0.0 // PASSIVE RECON</div>
-            <button class="cancel-btn" @click="emit('cancel')">ABORT [ESC]</button>
+            <div class="text-xs" style="color: #00ffcc66;">THEHARVESTER-PRO v1.0.0 // RECONOCIMIENTO PASIVO</div>
+            <button class="cancel-btn" @click="emit('cancel')">ABORTAR [ESC]</button>
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@ const formattedTime = computed(() => {
 const activeSources = computed(() => {
   return props.sources.slice(0, 8).map(s => ({
     name: s,
-    status: elapsedSeconds.value > props.sources.indexOf(s) * 2 ? 'DONE' : 'SCAN'
+    status: elapsedSeconds.value > props.sources.indexOf(s) * 2 ? 'LISTO' : 'ESCANEANDO'
   }))
 })
 

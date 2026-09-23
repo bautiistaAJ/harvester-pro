@@ -1,6 +1,7 @@
 <template>
   <div class="space-y-6">
     <DomainPanel :is-loading="searchStore.isLoading" @scan="handleScan" />
+    <SourcesPanel :availableSources="searchStore.sources" @update:sources="selectedSources = $event" />
 
     <HackerLoader
       v-if="showLoader"
@@ -56,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useSearchStore } from '../stores/search.js'
 import DomainPanel from '../components/DomainPanel.vue'
 import SourcesPanel from '../components/SourcesPanel.vue'
@@ -71,11 +72,15 @@ const showLoader = ref(false)
 const currentTarget = ref('')
 const selectedSources = ref([])
 
+onMounted(() => {
+  searchStore.fetchSources()
+})
+
 function handleScan(params) {
   currentTarget.value = params.domain
   searchStore.scan({
     target: params.domain,
-    sources: selectedSources.value.length ? selectedSources.value : ['crtsh', 'rapiddns', 'bing'],
+    sources: selectedSources.value.length ? selectedSources.value : ['crtsh', 'rapiddns', 'duckduckgo'],
     limit: params.limit || 500,
     dns_resolve: params.dns_resolve,
     dns_brute: params.dns_brute,

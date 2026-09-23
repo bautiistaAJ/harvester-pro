@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <h3 class="text-lg font-semibold text-white mb-4">Results</h3>
+    <h3 class="text-lg font-semibold text-white mb-4">Resultados</h3>
 
     <div class="flex flex-wrap gap-2 mb-4">
       <button
@@ -19,7 +19,7 @@
         <span class="text-cyan-400 font-mono">{{ item.value }}</span>
         <span class="text-xs text-gray-500">{{ item.sources.join(', ') }}</span>
       </div>
-      <div v-if="hostnames.length === 0" class="text-gray-500 text-sm text-center py-4">No hostnames found</div>
+      <div v-if="hostnames.length === 0" class="text-gray-500 text-sm text-center py-4">Sin subdominios</div>
     </div>
 
     <div v-if="activeTab === 'emails'" class="space-y-1 max-h-96 overflow-y-auto">
@@ -27,7 +27,7 @@
         <span class="text-green-400 font-mono">{{ item.value }}</span>
         <span class="text-xs text-gray-500">{{ item.sources.join(', ') }}</span>
       </div>
-      <div v-if="emails.length === 0" class="text-gray-500 text-sm text-center py-4">No emails found</div>
+      <div v-if="emails.length === 0" class="text-gray-500 text-sm text-center py-4">Sin correos</div>
     </div>
 
     <div v-if="activeTab === 'ips'" class="space-y-1 max-h-96 overflow-y-auto">
@@ -35,7 +35,7 @@
         <span class="text-purple-400 font-mono">{{ item.value }}</span>
         <span class="text-xs text-gray-500">{{ item.sources.join(', ') }}</span>
       </div>
-      <div v-if="ips.length === 0" class="text-gray-500 text-sm text-center py-4">No IPs found</div>
+      <div v-if="ips.length === 0" class="text-gray-500 text-sm text-center py-4">Sin IPs</div>
     </div>
 
     <div v-if="activeTab === 'asns'" class="space-y-1 max-h-96 overflow-y-auto">
@@ -43,7 +43,7 @@
         <span class="text-amber-400 font-mono">{{ item.value }}</span>
         <span class="text-xs text-gray-500">{{ item.sources.join(', ') }}</span>
       </div>
-      <div v-if="asns.length === 0" class="text-gray-500 text-sm text-center py-4">No ASNs found</div>
+      <div v-if="asns.length === 0" class="text-gray-500 text-sm text-center py-4">Sin ASNs</div>
     </div>
 
     <div v-if="activeTab === 'urls'" class="space-y-1 max-h-96 overflow-y-auto">
@@ -51,7 +51,7 @@
         <span class="text-pink-400 font-mono text-xs break-all">{{ item.value }}</span>
         <span class="text-xs text-gray-500 shrink-0 ml-2">{{ item.sources.join(', ') }}</span>
       </div>
-      <div v-if="urls.length === 0" class="text-gray-500 text-sm text-center py-4">No URLs found</div>
+      <div v-if="urls.length === 0" class="text-gray-500 text-sm text-center py-4">Sin URLs</div>
     </div>
 
     <div v-if="activeTab === 'shodan'" class="space-y-2 max-h-96 overflow-y-auto">
@@ -62,12 +62,12 @@
           <div v-if="item.details.organization">Org: {{ item.details.organization }}</div>
           <div v-if="item.details.services">
             <div v-for="(svc, j) in item.details.services" :key="j" class="ml-2">
-              Port {{ svc.port }}/{{ svc.transport }} - {{ svc.product || 'unknown' }}
+              Puerto {{ svc.port }}/{{ svc.transport }} - {{ svc.product || 'desconocido' }}
             </div>
           </div>
         </div>
       </div>
-      <div v-if="shodan.length === 0" class="text-gray-500 text-sm text-center py-4">No Shodan data</div>
+      <div v-if="shodan.length === 0" class="text-gray-500 text-sm text-center py-4">Sin datos de Shodan</div>
     </div>
   </div>
 </template>
@@ -87,8 +87,8 @@ const props = defineProps({
 const activeTab = ref('hostnames')
 
 const tabs = computed(() => [
-  { key: 'hostnames', label: 'Subdomains', count: props.hostnames.length },
-  { key: 'emails', label: 'Emails', count: props.emails.length },
+  { key: 'hostnames', label: 'Subdominios', count: props.hostnames.length },
+  { key: 'emails', label: 'Correos', count: props.emails.length },
   { key: 'ips', label: 'IPs', count: props.ips.length },
   { key: 'asns', label: 'ASNs', count: props.asns.length },
   { key: 'urls', label: 'URLs', count: props.urls.length },

@@ -5,16 +5,27 @@ const router = Router()
 const THEHARVESTER_URL = process.env.THEHARVESTER_URL || 'http://localhost:5000'
 const THEHARVESTER_API_KEY = process.env.THEHARVESTER_API_KEY || ''
 
+function normalizeTarget(raw) {
+  let target = String(raw).trim()
+  try {
+    const url = new URL(target.startsWith('http') ? target : `https://${target}`)
+    return url.hostname
+  } catch {
+    return target.replace(/^[^a-zA-Z0-9]+/, '').replace(/[^a-zA-Z0-9.-]+$/, '').replace(/\/$/, '')
+  }
+}
+
 router.post('/', async (req, res) => {
   try {
     const { target, sources, limit, dns_resolve, dns_brute, shodan, screenshot, proxy } = req.body
+    const normalized = normalizeTarget(target)
 
-    if (!target || !sources || sources.length === 0) {
+    if (!normalized || !sources || sources.length === 0) {
       return res.status(400).json({ error: 'Target and at least one source required' })
     }
 
     const params = {
-      target,
+      target: normalized,
       sources,
       limit: limit || 500,
       dns_resolve: dns_resolve || false,

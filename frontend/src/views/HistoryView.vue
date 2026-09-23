@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-6">
-    <h2 class="text-xl font-bold text-white">Scan History</h2>
+    <h2 class="text-xl font-bold text-white">Historial de escaneos</h2>
 
     <div v-if="runs.length === 0" class="card text-center py-12 text-gray-500">
-      <p>No scans yet</p>
-      <p class="text-sm mt-1">Run a scan to see history</p>
+      <p>Aún no hay escaneos</p>
+      <p class="text-sm mt-1">Ejecuta un escaneo para ver el historial</p>
     </div>
 
     <div v-else class="space-y-3">
@@ -16,7 +16,7 @@
         <div>
           <div class="text-white font-medium">{{ run.target }}</div>
           <div class="text-xs text-gray-500 mt-1">
-            {{ run.status }} | {{ run.result_count }} results | {{ formatDate(run.created_at) }}
+            {{ run.status }} | {{ run.result_count }} resultados | {{ formatDate(run.created_at) }}
           </div>
         </div>
         <div class="flex items-center space-x-2">

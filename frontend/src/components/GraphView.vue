@@ -1,17 +1,17 @@
 <template>
   <div class="card">
-    <h3 class="text-lg font-semibold text-white mb-4">Network Graph</h3>
+    <h3 class="text-lg font-semibold text-white mb-4">Grafo de red</h3>
 
     <div v-if="hasGraph" class="mt-4">
       <div ref="graphContainer" class="graph-container w-full rounded-lg overflow-hidden"></div>
       <div class="mt-2 text-xs text-gray-500 text-center">
-        Scroll to zoom | Drag to move | Click node to highlight
+        Scroll para ampliar | Arrastra para mover | Clic en nodo para resaltar
       </div>
     </div>
 
     <div v-else class="text-center py-8 text-gray-500">
-      <p>No graph data available</p>
-      <p class="text-xs mt-1">Run a scan to see network relationships</p>
+      <p>Sin datos de grafo</p>
+      <p class="text-xs mt-1">Ejecuta un escaneo para ver relaciones de red</p>
     </div>
 
     <Teleport to="body">
